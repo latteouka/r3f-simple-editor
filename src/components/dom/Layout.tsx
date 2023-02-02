@@ -1,7 +1,11 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react'
 
-const Layout = forwardRef(({ children, ...props }, ref) => {
-  const localRef = useRef()
+interface LayoutProps {
+  children?: React.ReactNode
+}
+
+const Layout = forwardRef<HTMLDivElement, LayoutProps>(({ children, ...props }, ref) => {
+  const localRef = useRef<HTMLDivElement>()
 
   useImperativeHandle(ref, () => localRef.current)
 
