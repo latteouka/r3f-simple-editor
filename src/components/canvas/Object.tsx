@@ -1,15 +1,17 @@
 import * as THREE from 'three'
-import { useRef, Suspense, useEffect } from 'react'
+import { useRef, useEffect, Suspense } from 'react'
 
-import { useSelect } from '@react-three/drei'
 import { useControls } from './MultiLeva'
 
+import { useDrag } from '@use-gesture/react'
+import { animated, useSpring } from '@react-spring/three'
 import Sprite from './Sprite'
 import { TextureLoader } from 'three'
-import { button } from 'leva'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '@/utils/store'
+import { button, folder } from 'leva'
+import { useDispatch } from 'react-redux'
 import { deleteObject } from '@/utils/features/statusSlice'
+import { useThree } from '@react-three/fiber'
+import { useSelectedStore } from '@/utils/zustand'
 
 // transform mode
 type Mode = ['translate', 'rotate', 'scale']
@@ -19,105 +21,175 @@ export const modes: Mode = ['translate', 'rotate', 'scale']
 const box = new THREE.BoxGeometry(0.3, 0.3, 0.3)
 const sphere = new THREE.SphereGeometry(0.2, 32, 32)
 
-//const material = new THREE.MeshPhongMaterial({ color: 'hotpink', side: THREE.DoubleSide, transparent: true })
-const offset = new THREE.Vector3(0, 0.25, 0)
+const raycaster = new THREE.Raycaster()
+const dummy = new THREE.Vector3()
 
-export default function ({ position, quaternion, geometry, name, color = 'white' }) {
+const textureLoader = new TextureLoader()
+
+// const material = new THREE.MeshPhongMaterial({ color: 'hotpink', side: THREE.DoubleSide, transparent: true })
+// const offset = new THREE.Vector3(0, 0.25, 0)
+
+export default function ({ position, quaternion, geometry, name, color = 'white', setIsDragging, intersect }) {
+  // refs
   const group = useRef<THREE.Group>(null)
   const ref = useRef<THREE.Mesh>(null)
   const material = useRef<THREE.MeshPhongMaterial>(null)
 
-  const objects = useSelector((state: RootState) => state.status.objects)
+  const { mouse, camera } = useThree()
+
+  // const objects = useSelector((state: RootState) => state.status.objects)
   const dispatch = useDispatch()
 
-  const selected = useSelect().map((sel) => sel.userData.store)
+  // const selected = useSelect().map((sel) => sel.userData.store)
 
-  const [store, allProps]: any = useControls(selected, {
-    px: {
-      value: position.x,
-      min: -5,
-      max: 5,
-      step: 0.01,
-    },
-    py: {
-      value: position.y,
-      min: -5,
-      max: 5,
-      step: 0.01,
-    },
-    pz: {
-      value: position.z,
-      min: -5,
-      max: 5,
-      step: 0.01,
-    },
-    rx: {
-      value: 0,
-      min: -5,
-      max: 5,
-      step: 0.01,
-    },
-    ry: {
-      value: 0,
-      min: -5,
-      max: 5,
-      step: 0.01,
-    },
-    rz: {
-      value: 0,
-      min: -5,
-      max: 5,
+  const { selected, setSelected } = useSelectedStore()
+
+  const selectedStores = selected.map((sel) => sel.userData.store)
+
+  const { target, height, offset } = intersect
+
+  const [store, allProps, set]: any = useControls(selectedStores, {
+    Position: folder({
+      px: {
+        value: position.x,
+        min: -5,
+        max: 5,
+        step: 0.01,
+      },
+      py: {
+        value: position.y,
+        min: -5,
+        max: 5,
+        step: 0.01,
+      },
+      pz: {
+        value: position.z,
+        min: -5,
+        max: 5,
+        step: 0.01,
+      },
+    }),
+    Rotation: folder({
+      rx: {
+        value: 0,
+        min: -5,
+        max: 5,
+        step: 0.01,
+      },
+      ry: {
+        value: 0,
+        min: -5,
+        max: 5,
+        step: 0.01,
+      },
+      rz: {
+        value: 0,
+        min: -5,
+        max: 5,
+        step: 0.01,
+      },
+    }),
+    scale: {
+      value: 1,
+      min: 0.01,
+      max: 3,
       step: 0.01,
     },
     color: {
       value: color,
     },
-    texture: {
+    textureMap: {
       image: undefined,
     },
     Delete: button(() => {
       dispatch(deleteObject(name))
+      setSelected([])
     }),
   })
 
-  const isSelected = !!selected.find((sel) => sel === store)
+  const isSelected = !!selectedStores.find((sel) => sel === store)
 
-  // set initial rotation
+  // implementation for useDrag
+  // using leva api to mutate position so don't have to bind spring to mesh
+  const [, api]: any = useSpring(() => ({
+    position: [allProps.px, allProps.py, allProps.pz],
+    config: { friction: 10 },
+  }))
+
+  const bind: any = useDrag<THREE.Event>(
+    ({ active, timeStamp }) => {
+      if (active && isSelected) {
+        raycaster.setFromCamera(mouse, camera)
+
+        if (!target.current) return
+        const result = raycaster.intersectObject(target.current, true)
+
+        if (result.length > 0) {
+          const newPosition = dummy.copy(result[0].point).addScaledVector(result[0].face.normal, height / 2 + offset)
+          set({ px: newPosition.x, py: newPosition.y, pz: newPosition.z })
+        }
+      }
+
+      material.current.opacity = active ? 0.6 : 1
+      setIsDragging(active)
+
+      api.start({
+        position: [allProps.px, allProps.py, allProps.pz],
+      })
+      return timeStamp
+    },
+    { delay: true },
+  )
+
+  // set initial rotation for once
   useEffect(() => {
     ref.current.quaternion.copy(new THREE.Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w))
   }, [])
 
-  // change texture
+  // if user upload texture change
   useEffect(() => {
-    if (!allProps.texture) return
+    // clear when press x
+    if (!allProps.textureMap) {
+      material.current.map = null
+      return
+    }
 
-    const textureLoader = new TextureLoader()
-    textureLoader.load(allProps.texture, (t) => {
+    textureLoader.load(allProps.textureMap, (t) => {
       material.current.map = t
       material.current.needsUpdate = true
     })
-  }, [allProps.texture])
+  }, [allProps.textureMap])
+
+  // // why not rotate the ball!
+  // useFrame((state) => {
+  //   if (ref.current.geometry.type === 'SphereGeometry') {
+  //     ref.current.rotation.x += Math.sin(state.clock.elapsedTime) / 50
+  //   }
+  // })
 
   return (
     <group ref={group}>
-      <mesh
+      <animated.mesh
+        {...bind()}
         castShadow
         receiveShadow
         position={[allProps.px, allProps.py, allProps.pz]}
         rotation={[allProps.rx, allProps.ry, allProps.rz]}
-        // quaternion={quaternion}
+        scale={allProps.scale}
         ref={ref}
         name={name}
         userData={{ store }}
-        // onClick={(e) => (e.stopPropagation(), dispatch(setSelected(ref.current)))}
-        // onPointerMissed={(e) => e.type === 'click' && dispatch(setSelected(null))}
         geometry={geometry === 'box' ? box : sphere}>
-        <meshPhongMaterial color={allProps.color} map={null} ref={material} />
-      </mesh>
-      <Suspense>{ref.current && <Sprite position={ref.current.position} isSelected={isSelected} />}</Suspense>
-      {/* <sprite ref={spriteRef} position={spritePosition} scale={0.2} visible={isSelected}> */}
-      {/*   <spriteMaterial map={texture} /> */}
-      {/* </sprite> */}
+        <meshPhongMaterial color={allProps.color} map={null} ref={material} transparent />
+      </animated.mesh>
+      <Suspense fallback={null}>
+        <Sprite
+          position={new THREE.Vector3(allProps.px, allProps.py, allProps.pz)}
+          isSelected={isSelected}
+          parent={ref}
+          geometry={geometry}
+        />
+      </Suspense>
     </group>
   )
 }

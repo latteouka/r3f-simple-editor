@@ -9,30 +9,43 @@ import { addObject } from '@/utils/features/statusSlice'
 import { RootState } from '@/utils/store'
 
 import { nanoid } from 'nanoid'
+import Controls from './Controls'
+import { useSelectedStore } from '@/utils/zustand'
 
 interface RaycasterNormalProps {
   grp: MutableRefObject<THREE.Group>
   offset?: number
-  selectedProps: any
+  //selectedProps: any
 }
 // this is the normal Normal!
 const forwardVector = new THREE.Vector3(0, 0, 1)
 
-// real objects info stores here
-const allObjects = []
+const box3 = new THREE.Box3()
+const raycaster = new THREE.Raycaster()
 
-export default function RaycasterNormal({ grp, offset = 0.01, selectedProps }: RaycasterNormalProps) {
+// calculate the min height of a threejs mesh
+const calculateHeight = (mesh: THREE.Mesh) => {
+  box3.setFromObject(mesh, true)
+  const height = Math.min(box3.max.x - box3.min.x, box3.max.y - box3.min.y, box3.max.z - box3.min.z)
+  return height
+}
+
+export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalProps) {
+  // for disable control
+  const [isDragging, setIsDragging] = useState(false)
   // temp object visibility
-  const [visible, setVisible] = useState(false)
+  // const [visible, setVisible] = useState(false)
   // calculate add object height
   const [height, setHeight] = useState(0)
+
   // redux state
   const addGeometryType = useSelector((state: RootState) => state.status.add)
   const objects = useSelector((state: RootState) => state.status.objects)
   const dispatch = useDispatch()
 
   // state from parent, for passing selected to Leva Panel
-  const { setSelected } = selectedProps
+  // const { selected, setSelected } = selectedProps
+  const { selected, setSelected } = useSelectedStore()
 
   // ref
   const hitMesh = useRef<THREE.Mesh>(null)
@@ -43,14 +56,13 @@ export default function RaycasterNormal({ grp, offset = 0.01, selectedProps }: R
   const { mouse, camera } = useThree()
 
   const handleClick = (event) => {
-    const raycaster = new THREE.Raycaster()
+    if (!aIsPressed) return
+    if (!grp.current) return
     raycaster.setFromCamera(mouse, camera)
 
-    if (!grp.current) return
     const result = raycaster.intersectObject(grp.current, true)
 
     if (result.length > 0) {
-      if (!aIsPressed) return
       dispatch(
         addObject({
           id: nanoid(),
@@ -66,16 +78,12 @@ export default function RaycasterNormal({ grp, offset = 0.01, selectedProps }: R
             w: tempObject.current.quaternion.w,
           },
           geometry: addGeometryType,
-          // position: tempObject.current.position.clone(),
-          // quaternion: tempObject.current.quaternion.clone(),
-          // geometry: addGeometryType,
         }),
       )
     }
   }
 
   useFrame(({ mouse, camera }) => {
-    const raycaster = new THREE.Raycaster()
     raycaster.setFromCamera(mouse, camera)
     //raycaster.firstHitOnly = true
 
@@ -84,56 +92,46 @@ export default function RaycasterNormal({ grp, offset = 0.01, selectedProps }: R
     const result = raycaster.intersectObject(grp.current, true)
 
     if (result.length > 0) {
-      setVisible(true)
       // add v * s (use normal vector to add some offset)
       hitMesh.current.position.copy(result[0].point).addScaledVector(result[0].face.normal, offset)
       tempObject.current.position.copy(result[0].point).addScaledVector(result[0].face.normal, height / 2 + offset)
       // rotate by normal
       hitMesh.current.quaternion.setFromUnitVectors(forwardVector, result[0].face.normal)
       tempObject.current.quaternion.setFromUnitVectors(forwardVector, result[0].face.normal)
-    } else {
-      setVisible(false)
     }
   })
 
   useEffect(() => {
-    const box3 = new THREE.Box3().setFromObject(tempObject.current, true)
-    const hitMeshHeight = Math.min(box3.max.x - box3.min.x, box3.max.y - box3.min.y, box3.max.z - box3.min.z)
-    setHeight(hitMeshHeight)
+    const height = calculateHeight(selected[0] ? selected[0] : tempObject.current)
+    setHeight(height)
+  }, [selected])
 
+  // recalculate height when select
+  useEffect(() => {
     window.addEventListener('click', handleClick)
 
     return () => {
       window.removeEventListener('click', handleClick)
     }
-  }, [aIsPressed])
+  }, [aIsPressed, selected])
 
   return (
     <group>
-      <mesh ref={hitMesh} visible={visible}>
-        <ringGeometry args={[0.05, 0.1, 32]} />
+      <mesh ref={hitMesh}>
         {/* testing more indicator */}
         {/* <boxGeometry args={[0.2, 0.2, 0.2]} /> */}
         {/* <sphereGeometry args={[0.2, 32, 32]} /> */}
         {/* <torusKnotGeometry args={[0.1, 0.04, 200, 50]} /> */}
+        <ringGeometry args={[0.05, 0.1, 32]} />
         <meshBasicMaterial color='hotpink' side={THREE.DoubleSide} />
       </mesh>
 
-      {/* show temp object */}
-      {addGeometryType === 'box' && (
-        <mesh ref={tempObject} visible={aIsPressed}>
-          <boxGeometry args={[0.3, 0.3, 0.3]} />
-          <meshBasicMaterial color={0xff0000} side={THREE.DoubleSide} transparent opacity={aIsPressed ? 0.3 : 0} />
-        </mesh>
-      )}
-
-      {/* show temp object */}
-      {addGeometryType === 'sphere' && (
-        <mesh ref={tempObject} visible={aIsPressed}>
-          <sphereGeometry args={[0.2, 32, 32]} />
-          <meshBasicMaterial color={0xff0000} side={THREE.DoubleSide} transparent opacity={aIsPressed ? 0.3 : 0} />
-        </mesh>
-      )}
+      {/* show transparent temp object when a is pressed */}
+      <mesh ref={tempObject} visible={aIsPressed}>
+        {addGeometryType === 'box' && <boxGeometry args={[0.3, 0.3, 0.3]} />}
+        {addGeometryType === 'sphere' && <sphereGeometry args={[0.2, 32, 32]} />}
+        <meshBasicMaterial color={0xff0000} side={THREE.DoubleSide} transparent opacity={aIsPressed ? 0.3 : 0} />
+      </mesh>
 
       <Select multiple box onChange={setSelected}>
         {objects.map((object) => {
@@ -146,13 +144,15 @@ export default function RaycasterNormal({ grp, offset = 0.01, selectedProps }: R
               geometry={object.geometry}
               key={object.id}
               name={object.id}
+              setIsDragging={setIsDragging}
+              intersect={{ target: grp, height, offset }}
             />
           )
         })}
-        {/* <Controls /> */}
       </Select>
 
-      <OrbitControls makeDefault enabled={!aIsPressed} />
+      {/* <Controls target={selected} /> */}
+      <OrbitControls makeDefault enabled={!aIsPressed && !isDragging} />
     </group>
   )
 }

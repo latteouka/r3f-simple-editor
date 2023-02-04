@@ -8,26 +8,26 @@ import { setMode } from '@/utils/features/statusSlice'
 type Mode = ['translate', 'rotate', 'scale']
 export const modes: Mode = ['translate', 'rotate', 'scale']
 
-export default function () {
-  const selected = useSelect()
-  const mode = useSelector((state: RootState) => state.status.mode)
-  const dispatch = useDispatch()
-
-  const handleRightClick = () => {
-    if (!selected) return
-    dispatch(setMode())
-  }
-
-  useEffect(() => {
-    window.addEventListener('contextmenu', handleRightClick)
-
-    return () => {
-      window.removeEventListener('contextmenu', handleRightClick)
-    }
-  }, [mode, selected])
+export default function ({ target }) {
+  // const selected = useSelect()
+  // const mode = useSelector((state: RootState) => state.status.mode)
+  // const dispatch = useDispatch()
+  //
+  // const handleRightClick = () => {
+  //   if (!selected) return
+  //   dispatch(setMode())
+  // }
+  //
+  // useEffect(() => {
+  //   window.addEventListener('contextmenu', handleRightClick)
+  //
+  //   return () => {
+  //     window.removeEventListener('contextmenu', handleRightClick)
+  //   }
+  // }, [mode, selected])
   return (
     <>
-      {selected.length > 0 && <TransformControls object={selected[0]} mode={modes[mode % modes.length]} />}
+      {target.length > 0 && <TransformControls object={target[0]} mode='scale' />}
       {/* <OrbitControls makeDefault /> */}
     </>
   )

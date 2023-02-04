@@ -1,6 +1,6 @@
-export default function () {
+export default function (props) {
   return (
-    <mesh rotation={[Math.PI / 2 + Math.PI, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
+    <mesh rotation={[Math.PI / 2 + Math.PI, 0, 0]} receiveShadow {...props}>
       <planeGeometry args={[25, 25]} />
       <meshStandardMaterial color={0xfef3e3} />
     </mesh>

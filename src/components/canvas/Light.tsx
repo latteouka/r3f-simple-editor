@@ -1,5 +1,4 @@
 export default function () {
-  console.log('light')
   return (
     <>
       <ambientLight intensity={0.5} color='#FEF3E3' />

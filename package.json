@@ -10,10 +10,12 @@
     "node": ">=14"
   },
   "dependencies": {
+    "@react-spring/three": "^9.6.1",
     "@react-three/drei": "^9.56.5",
     "@react-three/fiber": "^8.10.1",
     "@react-three/rapier": "^0.12.2",
     "@reduxjs/toolkit": "^1.9.2",
+    "@use-gesture/react": "^10.2.24",
     "glsl-random": "^0.0.5",
     "leva": "^0.9.34",
     "nanoid": "^4.0.0",
@@ -25,7 +27,8 @@
     "react-icons": "^4.7.1",
     "react-redux": "^8.0.5",
     "three": "^0.149.0",
-    "three-stdlib": "^2.21.6"
+    "three-stdlib": "^2.21.6",
+    "zustand": "^4.3.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^13.1.6",
