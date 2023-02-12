@@ -36,10 +36,10 @@ export default function () {
           Last
         </button>
       </div>
-      <div className='flex flex-col justify-center items-start mb-4 ml-6 md:ml-0 md:mb-0'>
-        <p>Press a/A to enter adding mode.</p>
-        <p>Press Shift to select multiple objects.</p>
-      </div>
+      {/* <div className='flex flex-col justify-center items-start mb-4 ml-6 md:ml-0 md:mb-0'> */}
+      {/*   <p>Press a/A to enter adding mode.</p> */}
+      {/*   <p>Press Shift to select multiple objects.</p> */}
+      {/* </div> */}
     </div>
   )
 }

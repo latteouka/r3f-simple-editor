@@ -1,12 +1,14 @@
 import { Canvas } from '@react-three/fiber'
 import { KeyboardControls, KeyboardControlsEntry, Preload } from '@react-three/drei'
 import { Panel } from './MultiLeva'
-import { Suspense, useMemo, useState, useRef } from 'react'
+import { Suspense, useMemo, useRef } from 'react'
 import AddObject from './AddObject'
 import Floor from './Floor'
 import Model from './Model'
 import Light from './Light'
 import { Perf } from 'r3f-perf'
+import Test from './Test'
+import Panel3D from './Panel3D'
 
 export enum KeyControls {
   add = 'add',
@@ -36,7 +38,7 @@ export default function Scene({ children, ...props }) {
       <KeyboardControls map={map}>
         <Canvas
           {...props}
-          camera={{ fov: 50, position: [7, 7, 7] }}
+          camera={{ fov: 35, position: [8, 13, 9], zoom: 0.9 }}
           shadows
           onCreated={({ gl }) => {
             gl.setClearColor(0xfef3e3)
@@ -60,7 +62,7 @@ export default function Scene({ children, ...props }) {
           </Suspense>
 
           <Preload all />
-          <Perf position='top-left' />
+          {/* <Perf position='top-left' /> */}
         </Canvas>
 
         <Panel />

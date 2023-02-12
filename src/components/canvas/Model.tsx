@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useGLTF, useAnimations } from '@react-three/drei'
 
 const grinderGlassMaterial = new THREE.MeshPhysicalMaterial({
@@ -22,9 +22,12 @@ const cakeWindowMaterial = new THREE.MeshPhysicalMaterial({
 })
 
 export default function Model(props) {
-  const group = useRef()
+  const group = useRef<THREE.Group>(null)
   const { nodes, materials, animations } = useGLTF('/models/lecouernew.glb')
   // const { actions } = useAnimations(animations, group)
+  useEffect(() => {
+    group.current.name = 'model'
+  }, [])
   return (
     <group ref={group} {...props} dispose={null}>
       <group name='Scene'>

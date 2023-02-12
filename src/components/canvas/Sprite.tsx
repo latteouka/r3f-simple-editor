@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 
@@ -11,7 +11,7 @@ const offset = new THREE.Vector3()
 const box3 = new THREE.Box3()
 
 // props' position is object's position
-export default function ({ position, isSelected, geometry, parent }) {
+export default function ({ position, isSelected, parent }) {
   const texture = useTexture('/icons/down.png')
   const spriteRef = useRef<THREE.Sprite>(null)
 

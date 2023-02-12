@@ -5,12 +5,12 @@ interface ObjectProps {
   id: string
   position: { x: number; y: number; z: number }
   quaternion: { x: number; y: number; z: number; w: number }
-  geometry: 'box' | 'sphere'
+  geometry: 'box' | 'sphere' | 'blue_box'
 }
 
 export interface StatusState {
   mode: number
-  add: 'box' | 'sphere'
+  add: 'box' | 'sphere' | 'blue_box'
   objects: ObjectProps[]
 }
 
@@ -27,7 +27,7 @@ export const statusSlice = createSlice({
     setMode: (state) => {
       state.mode += 1
     },
-    setAdd: (state, action: PayloadAction<'box' | 'sphere'>) => {
+    setAdd: (state, action: PayloadAction<StatusState['add']>) => {
       state.add = action.payload
     },
     addObject: (state, action: PayloadAction<ObjectProps>) => {

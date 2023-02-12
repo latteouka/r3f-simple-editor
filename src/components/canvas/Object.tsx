@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useRef, useEffect, Suspense } from 'react'
+import { useRef, useEffect, Suspense, useState } from 'react'
 
 import { useControls } from './MultiLeva'
 
@@ -26,14 +26,25 @@ const dummy = new THREE.Vector3()
 
 const textureLoader = new TextureLoader()
 
+// calculate the min height of a threejs mesh
+const box3 = new THREE.Box3()
+
+const calculateHeight = (mesh: THREE.Mesh) => {
+  box3.setFromObject(mesh, true)
+  const height = Math.min(box3.max.x - box3.min.x, box3.max.y - box3.min.y, box3.max.z - box3.min.z)
+  return height
+}
+
 // const material = new THREE.MeshPhongMaterial({ color: 'hotpink', side: THREE.DoubleSide, transparent: true })
 // const offset = new THREE.Vector3(0, 0.25, 0)
 
-export default function ({ position, quaternion, geometry, name, color = 'white', setIsDragging, intersect }) {
+export default function ({ position, quaternion, geometry, name, color = 'white', setIsDragging, grp }) {
   // refs
   const group = useRef<THREE.Group>(null)
   const ref = useRef<THREE.Mesh>(null)
   const material = useRef<THREE.MeshPhongMaterial>(null)
+
+  const [height, setHeight] = useState(0)
 
   const { mouse, camera } = useThree()
 
@@ -45,8 +56,6 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
   const { selected, setSelected } = useSelectedStore()
 
   const selectedStores = selected.map((sel) => sel.userData.store)
-
-  const { target, height, offset } = intersect
 
   const [store, allProps, set]: any = useControls(selectedStores, {
     Position: folder({
@@ -109,7 +118,7 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
 
   const isSelected = !!selectedStores.find((sel) => sel === store)
 
-  // implementation for useDrag
+  // spring is for useDrag's moving implementation
   // using leva api to mutate position so don't have to bind spring to mesh
   const [, api]: any = useSpring(() => ({
     position: [allProps.px, allProps.py, allProps.pz],
@@ -121,11 +130,11 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
       if (active && isSelected) {
         raycaster.setFromCamera(mouse, camera)
 
-        if (!target.current) return
-        const result = raycaster.intersectObject(target.current, true)
+        if (!grp.current) return
+        const result = raycaster.intersectObject(grp.current, true)
 
         if (result.length > 0) {
-          const newPosition = dummy.copy(result[0].point).addScaledVector(result[0].face.normal, height / 2 + offset)
+          const newPosition = dummy.copy(result[0].point).addScaledVector(result[0].face.normal, height / 2 + 0.001)
           set({ px: newPosition.x, py: newPosition.y, pz: newPosition.z })
         }
       }
@@ -145,6 +154,12 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
   useEffect(() => {
     ref.current.quaternion.copy(new THREE.Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w))
   }, [])
+
+  // calculate height
+  useEffect(() => {
+    const height = calculateHeight(ref.current)
+    setHeight(height)
+  }, [allProps.scale])
 
   // if user upload texture change
   useEffect(() => {
