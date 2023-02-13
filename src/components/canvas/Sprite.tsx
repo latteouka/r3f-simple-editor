@@ -33,7 +33,11 @@ export default function Sprite({ position, isSelected, parent }) {
 
   return (
     <sprite ref={spriteRef} position={position} scale={0.2} visible={isSelected}>
-      <spriteMaterial map={texture} />
+      <spriteMaterial
+        map={texture}
+        // without this it might blot out something
+        depthWrite={false}
+      />
     </sprite>
   )
 }

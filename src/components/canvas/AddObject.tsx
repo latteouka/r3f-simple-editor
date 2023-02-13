@@ -10,7 +10,6 @@ import { RootState } from '@/utils/store'
 
 import { nanoid } from 'nanoid'
 import { useSelectedStore } from '@/utils/zustand'
-import Words from './Words'
 
 interface RaycasterNormalProps {
   grp: MutableRefObject<THREE.Group>

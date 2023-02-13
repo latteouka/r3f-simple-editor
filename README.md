@@ -17,4 +17,5 @@ This project was bootstrapped with [`create-r3f-app`](https://github.com/utsuboc
 
 # Memo
 
+- Drei/Select is using React Context Api
 - [Do Not Put Non-Serializable Values in State or Actions](https://www.bam.tech/article/the-redux-best-practice-do-not-put-non-serializable-values-in-state-or-actions-explained)
