@@ -32,14 +32,14 @@ export default function Model(props) {
   return (
     <group ref={group} {...props} dispose={null}>
       <group name='Scene'>
-        <mesh
-          name='cake_window'
-          castShadow
-          receiveShadow
-          geometry={nodes.cake_window.geometry}
-          material={cakeWindowMaterial}
-          position={[2.36, 1.76, -1.68]}
-        />
+        {/* <mesh */}
+        {/*   name='cake_window' */}
+        {/*   castShadow */}
+        {/*   receiveShadow */}
+        {/*   geometry={nodes.cake_window.geometry} */}
+        {/*   material={cakeWindowMaterial} */}
+        {/*   position={[2.36, 1.76, -1.68]} */}
+        {/* /> */}
         <group name='pos' position={[1.32, 1.76, -0.09]}>
           <mesh
             name='Cube024'
@@ -398,36 +398,36 @@ export default function Model(props) {
         {/*   material={materials['Material.002']} */}
         {/*   position={[-0.26, 2.47, -0.22]} */}
         {/* /> */}
-        <group name='pearl' position={[2.33, 1.79, -1.7]}>
-          <mesh
-            name='Sphere008'
-            castShadow
-            receiveShadow
-            geometry={nodes.Sphere008.geometry}
-            material={materials.caramelSolid}
-          />
-          <mesh
-            name='Sphere008_1'
-            castShadow
-            receiveShadow
-            geometry={nodes.Sphere008_1.geometry}
-            material={materials.base}
-          />
-          <mesh
-            name='Sphere008_2'
-            castShadow
-            receiveShadow
-            geometry={nodes.Sphere008_2.geometry}
-            material={materials.puff}
-          />
-          <mesh
-            name='Sphere008_3'
-            castShadow
-            receiveShadow
-            geometry={nodes.Sphere008_3.geometry}
-            material={materials.cream}
-          />
-        </group>
+        {/* <group name='pearl' position={[2.33, 1.79, -1.7]}> */}
+        {/*   <mesh */}
+        {/*     name='Sphere008' */}
+        {/*     castShadow */}
+        {/*     receiveShadow */}
+        {/*     geometry={nodes.Sphere008.geometry} */}
+        {/*     material={materials.caramelSolid} */}
+        {/*   /> */}
+        {/*   <mesh */}
+        {/*     name='Sphere008_1' */}
+        {/*     castShadow */}
+        {/*     receiveShadow */}
+        {/*     geometry={nodes.Sphere008_1.geometry} */}
+        {/*     material={materials.base} */}
+        {/*   /> */}
+        {/*   <mesh */}
+        {/*     name='Sphere008_2' */}
+        {/*     castShadow */}
+        {/*     receiveShadow */}
+        {/*     geometry={nodes.Sphere008_2.geometry} */}
+        {/*     material={materials.puff} */}
+        {/*   /> */}
+        {/*   <mesh */}
+        {/*     name='Sphere008_3' */}
+        {/*     castShadow */}
+        {/*     receiveShadow */}
+        {/*     geometry={nodes.Sphere008_3.geometry} */}
+        {/*     material={materials.cream} */}
+        {/*   /> */}
+        {/* </group> */}
       </group>
     </group>
   )

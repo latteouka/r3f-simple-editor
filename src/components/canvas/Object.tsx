@@ -13,6 +13,7 @@ import { deleteObject } from '@/utils/features/statusSlice'
 import { useThree } from '@react-three/fiber'
 import { useSelectedStore } from '@/utils/zustand'
 
+const forwardVector = new THREE.Vector3(0, 0, 1)
 // transform mode
 type Mode = ['translate', 'rotate', 'scale']
 export const modes: Mode = ['translate', 'rotate', 'scale']
@@ -137,6 +138,7 @@ export default function Object({ position, quaternion, geometry, name, color = '
         if (result.length > 0) {
           const newPosition = dummy.copy(result[0].point).addScaledVector(result[0].face.normal, height / 2 + 0.001)
           set({ px: newPosition.x, py: newPosition.y, pz: newPosition.z })
+          ref.current.quaternion.setFromUnitVectors(forwardVector, result[0].face.normal)
         }
       }
 
@@ -156,7 +158,7 @@ export default function Object({ position, quaternion, geometry, name, color = '
     ref.current.quaternion.copy(new THREE.Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w))
   }, [])
 
-  // calculate height
+  // recalculate height when scale
   useEffect(() => {
     const height = calculateHeight(ref.current)
     setHeight(height)

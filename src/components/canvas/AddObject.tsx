@@ -100,6 +100,7 @@ export default function RaycasterNormal() {
         .copy(result[0].point)
         .addScaledVector(result[0].face.normal, objectHeight[addGeometryType] / 2 + offset)
       // rotate by normal
+      console.log(result[0].face.normal)
       tempObject.current.quaternion.setFromUnitVectors(forwardVector, result[0].face.normal)
     }
   }, [addGeometryType, model])
