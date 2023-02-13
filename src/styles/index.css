@@ -6,7 +6,7 @@
   * {
     box-sizing: border-box;
   }
-  
+
   html,
   body,
   #__next {
@@ -15,5 +15,48 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+  }
+}
+
+.github-wrapper {
+  position: absolute;
+  bottom: 1rem;
+  right: 2rem;
+  z-index: 2;
+  overflow: hidden;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.github span {
+  position: relative;
+  z-index: 2;
+}
+.github {
+  position: relative;
+  font-size: 15px;
+  color: #313131;
+}
+@media screen and (max-width: 750px) {
+  .github {
+    font-size: 20px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .github:before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0px;
+    height: 0px;
+    background: #fefefe;
+    border-radius: 50%;
+    transition: width 0.5s, height 0.5s;
+    z-index: 1;
+  }
+  .github:hover:before {
+    width: 80px;
+    height: 80px;
   }
 }

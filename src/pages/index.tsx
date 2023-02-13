@@ -1,4 +1,5 @@
 import ElementPanel from '@/components/dom/ElementPanel'
+import Github from '@/components/dom/Github'
 
 // Dynamic import is used to prevent a payload when the website starts, that includes threejs, r3f etc..
 // WARNING ! errors might get obfuscated by using dynamic import.
@@ -7,7 +8,12 @@ import ElementPanel from '@/components/dom/ElementPanel'
 
 // Dom components go here
 export default function Page(props) {
-  return <ElementPanel />
+  return (
+    <>
+      <Github />
+      <ElementPanel />
+    </>
+  )
 }
 
 // Canvas components go here

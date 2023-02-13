@@ -2,6 +2,8 @@
 
 This project was bootstrapped with [`create-r3f-app`](https://github.com/utsuboco/create-r3f-app)
 
+[Live](https://r3f-simple-editor.vercel.app/)
+
 # Story
 
 - State Management: Redux
