@@ -9,6 +9,8 @@ import Light from './Light'
 import { Perf } from 'r3f-perf'
 import Test from './Test'
 import Panel3D from './Panel3D'
+import Indicator from './Indicator'
+import Words from './Words'
 
 export enum KeyControls {
   add = 'add',
@@ -21,8 +23,6 @@ export default function Scene({ children, ...props }) {
   //const selected = useSelector((state: RootState) => state.status.selected)
   //const [selected, setSelected] = useState([])
   //const setSelected = useSelectedStore((state) => state.setSelected)
-
-  const indicatorTarget = useRef<THREE.Group>(null)
 
   const map = useMemo<KeyboardControlsEntry<KeyControls>[]>(
     () => [
@@ -47,18 +47,14 @@ export default function Scene({ children, ...props }) {
           <Suspense fallback={null}>
             <Floor position={[0, -1.01, 0]} />
 
-            {/* mouse indicator ref */}
-            <group ref={indicatorTarget}>
+            <group>
               <Model position={[0, -1, 0]} />
             </group>
 
-            <AddObject
-              grp={indicatorTarget}
-              offset={0.001}
-              // selectedProps={{ selected: selected, setSelected: setSelected }}
-            />
-
             {children}
+            <AddObject />
+            <Indicator />
+            <Words />
           </Suspense>
 
           <Preload all />

@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import React, { useEffect, useRef } from 'react'
-import { useGLTF, useAnimations } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
+import { GLTF } from 'three-stdlib'
 
 const grinderGlassMaterial = new THREE.MeshPhysicalMaterial({
   transmission: 0.9,
@@ -23,7 +24,7 @@ const cakeWindowMaterial = new THREE.MeshPhysicalMaterial({
 
 export default function Model(props) {
   const group = useRef<THREE.Group>(null)
-  const { nodes, materials, animations } = useGLTF('/models/lecouernew.glb')
+  const { nodes, materials } = useGLTF('/models/lecouernew.glb') as unknown as GLTFResult
   // const { actions } = useAnimations(animations, group)
   useEffect(() => {
     group.current.name = 'model'
@@ -430,4 +431,79 @@ export default function Model(props) {
       </group>
     </group>
   )
+}
+
+type GLTFResult = GLTF & {
+  nodes: {
+    cake_window: THREE.Mesh
+    Cube024: THREE.Mesh
+    Cube024_1: THREE.Mesh
+    Plane: THREE.Mesh
+    Plane_1: THREE.Mesh
+    white_box2: THREE.Mesh
+    white_box3: THREE.Mesh
+    counter_floor: THREE.Mesh
+    Plane010: THREE.Mesh
+    Plane010_1: THREE.Mesh
+    white_box4: THREE.Mesh
+    shelf1: THREE.Mesh
+    Cube030: THREE.Mesh
+    Cube030_1: THREE.Mesh
+    shelf3: THREE.Mesh
+    Cube001: THREE.Mesh
+    Cube001_1: THREE.Mesh
+    Cube005: THREE.Mesh
+    Cube005_1: THREE.Mesh
+    shelf2: THREE.Mesh
+    Cube006: THREE.Mesh
+    Cube006_1: THREE.Mesh
+    Cube007: THREE.Mesh
+    Cube007_1: THREE.Mesh
+    Cube011: THREE.Mesh
+    Cube011_1: THREE.Mesh
+    Cube055: THREE.Mesh
+    Cube055_1: THREE.Mesh
+    Cube021: THREE.Mesh
+    Cube021_1: THREE.Mesh
+    Cube026: THREE.Mesh
+    Cube026_1: THREE.Mesh
+    Cube026_2: THREE.Mesh
+    Cube046: THREE.Mesh
+    Cube046_1: THREE.Mesh
+    Cube046_2: THREE.Mesh
+    Cylinder001: THREE.Mesh
+    Cylinder001_1: THREE.Mesh
+    Cylinder011: THREE.Mesh
+    Cylinder011_1: THREE.Mesh
+    Circle012: THREE.Mesh
+    Circle012_1: THREE.Mesh
+    grinder_glass: THREE.Mesh
+    cup1: THREE.Mesh
+    cup2: THREE.Mesh
+    cup3: THREE.Mesh
+    Sphere008: THREE.Mesh
+    Sphere008_1: THREE.Mesh
+    Sphere008_2: THREE.Mesh
+    Sphere008_3: THREE.Mesh
+  }
+  materials: {
+    cake_house: THREE.MeshStandardMaterial
+    grind_metal: THREE.MeshStandardMaterial
+    pos2: THREE.MeshStandardMaterial
+    counter_table: THREE.MeshStandardMaterial
+    card_stand: THREE.MeshStandardMaterial
+    leaf: THREE.MeshStandardMaterial
+    box_body: THREE.MeshStandardMaterial
+    grind_base: THREE.MeshStandardMaterial
+    tea_marker: THREE.MeshStandardMaterial
+    coffee_metal: THREE.MeshStandardMaterial
+    card: THREE.MeshStandardMaterial
+    card_none: THREE.MeshStandardMaterial
+    grind_glass: THREE.MeshStandardMaterial
+    ['Material.002']: THREE.MeshStandardMaterial
+    caramelSolid: THREE.MeshStandardMaterial
+    base: THREE.MeshStandardMaterial
+    puff: THREE.MeshStandardMaterial
+    cream: THREE.MeshStandardMaterial
+  }
 }

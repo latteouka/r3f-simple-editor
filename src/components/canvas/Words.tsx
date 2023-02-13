@@ -11,6 +11,9 @@ export default function () {
       <Word rotation={[0, Math.PI / 2, 0]} position={[-2.65, 4.15, 2.7]}>
         Press Shift to select multiple objects.
       </Word>
+      <Word rotation={[0, Math.PI / 2, 0]} position={[-2.65, 3.8, 2.7]}>
+        Drag when item is selected.
+      </Word>
     </>
   )
 }

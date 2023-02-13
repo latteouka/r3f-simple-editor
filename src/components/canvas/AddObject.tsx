@@ -33,7 +33,11 @@ const objectHeight = {
   blue_box: 0.14,
 }
 
-export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalProps) {
+const offset = 0.01
+
+export default function RaycasterNormal() {
+  const { scene } = useThree()
+  const [model, setModel] = useState<THREE.Object3D>()
   // for disable control
   const [isDragging, setIsDragging] = useState(false)
   // temp object visibility
@@ -50,7 +54,6 @@ export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalP
   const { selected, setSelected } = useSelectedStore()
 
   // ref
-  const hitMesh = useRef<THREE.Mesh>(null)
   const tempObject = useRef<THREE.Mesh>(null)
 
   const aIsPressed = useKeyboardControls((state) => state.add)
@@ -59,10 +62,10 @@ export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalP
 
   const handleClick = (event) => {
     if (!aIsPressed) return
-    if (!grp.current) return
+    if (!model) return
     raycaster.setFromCamera(mouse, camera)
 
-    const result = raycaster.intersectObject(grp.current, true)
+    const result = raycaster.intersectObject(model, true)
 
     if (result.length > 0) {
       dispatch(
@@ -88,20 +91,18 @@ export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalP
   const handleMouseMove = useCallback(() => {
     raycaster.setFromCamera(mouse, camera)
 
-    if (!grp.current) return
-    const result = raycaster.intersectObject(grp.current, true)
+    if (!model) return
+    const result = raycaster.intersectObject(model, true)
 
     if (result.length > 0) {
       // add v * s (use normal vector to add some offset)
-      hitMesh.current.position.copy(result[0].point).addScaledVector(result[0].face.normal, offset)
       tempObject.current.position
         .copy(result[0].point)
         .addScaledVector(result[0].face.normal, objectHeight[addGeometryType] / 2 + offset)
       // rotate by normal
-      hitMesh.current.quaternion.setFromUnitVectors(forwardVector, result[0].face.normal)
       tempObject.current.quaternion.setFromUnitVectors(forwardVector, result[0].face.normal)
     }
-  }, [addGeometryType])
+  }, [addGeometryType, model])
 
   // recalculate height when select
   useEffect(() => {
@@ -112,19 +113,14 @@ export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalP
       window.removeEventListener('click', handleClick)
       window.removeEventListener('mousemove', handleMouseMove)
     }
-  }, [aIsPressed, selected, addGeometryType])
+  }, [aIsPressed, selected, addGeometryType, model])
+
+  useEffect(() => {
+    setModel(scene.getObjectByName('model'))
+  }, [])
 
   return (
     <group>
-      <mesh ref={hitMesh}>
-        {/* testing more indicator */}
-        {/* <boxGeometry args={[0.2, 0.2, 0.2]} /> */}
-        {/* <sphereGeometry args={[0.2, 32, 32]} /> */}
-        {/* <torusKnotGeometry args={[0.1, 0.04, 200, 50]} /> */}
-        <ringGeometry args={[0.05, 0.1, 32]} />
-        <meshBasicMaterial color='hotpink' side={THREE.DoubleSide} />
-      </mesh>
-
       {/* show transparent temp object when a is pressed */}
       <mesh ref={tempObject} visible={aIsPressed}>
         {geometries[addGeometryType]}
@@ -143,12 +139,11 @@ export default function RaycasterNormal({ grp, offset = 0.01 }: RaycasterNormalP
               key={object.id}
               name={object.id}
               setIsDragging={setIsDragging}
-              grp={grp}
+              grp={model}
             />
           )
         })}
       </Select>
-      <Words />
 
       {/* <Controls target={selected} /> */}
       <OrbitControls makeDefault enabled={!aIsPressed && !isDragging} />

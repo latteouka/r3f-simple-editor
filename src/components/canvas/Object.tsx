@@ -117,6 +117,7 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
   })
 
   const isSelected = !!selectedStores.find((sel) => sel === store)
+  console.log(isSelected)
 
   // spring is for useDrag's moving implementation
   // using leva api to mutate position so don't have to bind spring to mesh
@@ -130,8 +131,8 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
       if (active && isSelected) {
         raycaster.setFromCamera(mouse, camera)
 
-        if (!grp.current) return
-        const result = raycaster.intersectObject(grp.current, true)
+        if (!grp) return
+        const result = raycaster.intersectObject(grp, true)
 
         if (result.length > 0) {
           const newPosition = dummy.copy(result[0].point).addScaledVector(result[0].face.normal, height / 2 + 0.001)
@@ -202,7 +203,6 @@ export default function ({ position, quaternion, geometry, name, color = 'white'
           position={new THREE.Vector3(allProps.px, allProps.py, allProps.pz)}
           isSelected={isSelected}
           parent={ref}
-          geometry={geometry}
         />
       </Suspense>
     </group>
