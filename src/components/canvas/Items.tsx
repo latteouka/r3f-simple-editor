@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import React, { forwardRef, MutableRefObject, useEffect, useRef } from 'react'
-import { useGLTF, useKeyboardControls } from '@react-three/drei'
+import React, { forwardRef } from 'react'
+import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
 type GLTFResult = GLTF & {
@@ -95,3 +95,4 @@ const Items = forwardRef<THREE.Group, ItemsProps>(({ name, temp, position, visib
 useGLTF.preload('/models/items.glb')
 
 export default Items
+Items.displayName = 'Items'

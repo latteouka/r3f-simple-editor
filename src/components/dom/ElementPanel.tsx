@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setAdd, resetObject, popLastObject } from '@/utils/features/statusSlice'
 import { RootState } from '@/utils/store'
 
-export default function () {
+export default function ElementPanel() {
   // current adding object type
   const add = useSelector((state: RootState) => state.status.add)
   const dispatch = useDispatch()
