@@ -11,7 +11,7 @@ const offset = new THREE.Vector3()
 const box3 = new THREE.Box3()
 
 // props' position is object's position
-export default function ({ position, isSelected, parent }) {
+export default function Sprite({ position, isSelected, parent }) {
   const texture = useTexture('/icons/down.png')
   const spriteRef = useRef<THREE.Sprite>(null)
 

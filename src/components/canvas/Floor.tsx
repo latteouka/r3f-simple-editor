@@ -1,4 +1,4 @@
-export default function (props) {
+export default function Floor(props) {
   return (
     <mesh rotation={[Math.PI / 2 + Math.PI, 0, 0]} receiveShadow {...props}>
       <planeGeometry args={[25, 25]} />

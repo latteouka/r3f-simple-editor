@@ -1,7 +1,7 @@
 import { Html } from '@react-three/drei'
 import ElementPanel from '../dom/ElementPanel'
 
-export default function () {
+export default function Panel3D() {
   return (
     <mesh rotation={[0, Math.PI / 2, 0]} position={[-2.65, 3, 1.7]}>
       <planeGeometry args={[2.5, 1]} />

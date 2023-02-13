@@ -8,7 +8,7 @@ import { setMode } from '@/utils/features/statusSlice'
 type Mode = ['translate', 'rotate', 'scale']
 export const modes: Mode = ['translate', 'rotate', 'scale']
 
-export default function ({ target }) {
+export default function Controls({ target }) {
   // const selected = useSelect()
   // const mode = useSelector((state: RootState) => state.status.mode)
   // const dispatch = useDispatch()

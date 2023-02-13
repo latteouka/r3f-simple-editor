@@ -38,7 +38,7 @@ const calculateHeight = (mesh: THREE.Mesh) => {
 // const material = new THREE.MeshPhongMaterial({ color: 'hotpink', side: THREE.DoubleSide, transparent: true })
 // const offset = new THREE.Vector3(0, 0.25, 0)
 
-export default function ({ position, quaternion, geometry, name, color = 'white', setIsDragging, grp }) {
+export default function Object({ position, quaternion, geometry, name, color = 'white', setIsDragging, grp }) {
   // refs
   const group = useRef<THREE.Group>(null)
   const ref = useRef<THREE.Mesh>(null)

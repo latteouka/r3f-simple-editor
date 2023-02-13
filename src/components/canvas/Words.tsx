@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { Text } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useRef, useState } from 'react'
-export default function () {
+export default function Words() {
   return (
     <>
       <Word rotation={[0, Math.PI / 2, 0]} position={[-2.65, 4.5, 2.7]}>
